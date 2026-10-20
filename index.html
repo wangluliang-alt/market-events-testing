@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Stock Market Event Calendar</title>
+<title>Stock Market Event Calendar</title><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="apple-touch-icon" href="./icon.svg"><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#ffae43">
 <style>
 :root{--ink:#34394b;--muted:#81869a;--pink:#f6d5e4;--purple:#ebe2ff;--green:#d7f1df;--line:#e9e5ef}
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#faf7fc;color:var(--ink)}
@@ -103,8 +103,8 @@ footer{margin-top:26px}
 @media(max-width:380px){.cell{min-height:75px}.cell strong{font-size:16px}.cell .mark{font-size:10px}.panel-event{padding:10px 7px}.panel-event button{padding:3px}}
 .toolbar .nav{margin:0;gap:4px;flex-shrink:0}.toolbar .nav button{min-width:76px;padding:9px 12px}.toolbar strong{flex:0 1 auto;margin-right:auto}
 @media(max-width:800px){.toolbar .nav{order:5;width:100%;justify-content:center}.toolbar .nav button{flex:1;max-width:180px}.toolbar strong{min-width:0}.toolbar{justify-content:space-between}}
-</style></head><body>
-<main class="app"><h1>Market Events 🌸</h1><p class="sub">Your personal stock market event calendar</p>
+.brand-icon{width:38px;height:38px;border-radius:9px;vertical-align:middle;margin-right:11px;box-shadow:0 3px 10px #f9a95b30}h1{display:flex;align-items:center}</style></head><body>
+<main class="app"><h1><img src="./icon.svg" alt="" class="brand-icon">Market Events</h1><p class="sub">Your personal stock market event calendar</p>
 <div class="toolbar"><div class="arrows"><button class="arrow" id="prev" aria-label="Previous">‹</button><button class="arrow" id="next" aria-label="Next">›</button></div><strong id="period"></strong><nav class="nav"><button id="weekTab" class="active">📆 Week</button><button id="monthTab">🗓️ Month</button></nav><button class="today" id="today">Today</button><button class="settings-btn" id="settings" aria-label="Calendar color settings" title="Colors">🎨</button></div>
 <div class="workspace"><div id="content"></div><aside id="dayPanel" class="day-panel" aria-label="Selected day events"><div class="panel-head"><h2 id="panelDate"></h2><div class="panel-arrows"><button id="panelPrev" type="button" aria-label="Previous day">‹</button><button id="panelNext" type="button" aria-label="Next day">›</button></div></div><div id="panelEvents" class="panel-events"></div><form id="quickForm" class="quick-form"><input id="quickInput" type="text" maxlength="1000" placeholder="Add an event…" aria-label="New event text" required><button type="submit" aria-label="Add event">＋</button></form></aside></div><footer>Events only · Saved on this device 🌿</footer></main>
 
