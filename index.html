@@ -28,9 +28,23 @@ h1{font-size:29px}.sub{font-size:14px}
 .event-text{font-size:18px;line-height:1.4}
 .actions button,.add,.row button{font-size:16px}
 @media(max-width:390px){.month-grid{gap:3px}.cell{padding:5px 2px}.cell strong{font-size:15px}.cell .mark{font-size:11px}}
+
+/* Per-week and per-month calendar colors */
+.toolbar .settings-btn{border:1px solid var(--line);border-radius:12px;background:#fff;padding:9px 12px;font-size:20px;cursor:pointer}
+.toolbar{flex-wrap:wrap}.toolbar strong{flex:1;min-width:125px}
+.color-sheet{align-items:center}.color-sheet .sheet{border-radius:22px;max-height:85vh;padding-bottom:30px}
+.color-sub{font-size:15px;color:#78718a;line-height:1.45;margin:0 0 16px}
+.color-scope{display:flex;gap:9px;margin-bottom:14px}.color-scope button{flex:1;padding:12px;border-radius:12px;border:1px solid #ded6e8;background:white;font-size:16px;color:#655a78}
+.color-scope button.active{background:#e9def5;border-color:#bba6d5;font-weight:700}
+.palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px;margin:18px 0}
+.swatch{aspect-ratio:1;border-radius:14px;border:2px solid #ffffff;box-shadow:0 0 0 1px #d9d3e0;cursor:pointer;position:relative}
+.swatch.chosen{box-shadow:0 0 0 3px #67517f}.swatch.chosen:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#2e2940;font-size:22px;font-weight:bold}
+.custom-color{display:flex;align-items:center;gap:12px;font-size:16px;margin:18px 0}.custom-color input{width:62px;height:44px;border:0;background:none}
+.color-actions{display:flex;gap:9px}.color-actions button{flex:1;padding:12px;border:0;border-radius:12px;font-size:16px;background:#eee9f4;color:#514368}
+@media(max-width:400px){.palette{gap:8px}.toolbar{gap:7px}.toolbar strong{font-size:17px;min-width:110px}.settings-btn{padding:8px}}
 </style></head><body>
 <main class="app"><h1>Market Events 🌸</h1><p class="sub">Your personal stock market event calendar</p>
-<div class="toolbar"><div class="arrows"><button class="arrow" id="prev" aria-label="Previous">‹</button><button class="arrow" id="next" aria-label="Next">›</button></div><strong id="period"></strong><button class="today" id="today">Today</button></div>
+<div class="toolbar"><div class="arrows"><button class="arrow" id="prev" aria-label="Previous">‹</button><button class="arrow" id="next" aria-label="Next">›</button></div><strong id="period"></strong><button class="today" id="today">Today</button><button class="settings-btn" id="settings" aria-label="Calendar color settings" title="Colors">🎨</button></div>
 <div id="content"></div><footer>Events only · Saved on this device 🌿</footer></main>
 <nav class="nav"><button id="weekTab" class="active">📆 Week</button><button id="monthTab">🗓️ Month</button></nav>
 <div id="scrim" class="scrim"><section class="sheet" role="dialog" aria-modal="true" aria-label="Events editor">
@@ -39,6 +53,13 @@ h1{font-size:29px}.sub{font-size:14px}
 <label class="field" for="name">Event<textarea id="name" required maxlength="1000" placeholder="Type your event here…" rows="3"></textarea></label>
 <div class="actions"><button type="button" id="cancelEdit">Cancel</button><button type="button" id="delete" class="danger" hidden>Delete</button><button class="save" type="submit">Save Event</button></div></form>
 <div class="actions"><button id="close" style="width:100%">Close</button></div></section></div>
+<div id="colorScrim" class="scrim color-sheet"><section class="sheet" role="dialog" aria-modal="true" aria-label="Calendar colors">
+<h2>🎨 Calendar Colors</h2><p class="color-sub" id="colorPeriod"></p>
+<div class="color-scope"><button type="button" id="scopeWeek">This Week</button><button type="button" id="scopeMonth">This Month</button></div>
+<div class="palette" id="palette"></div>
+<label class="custom-color">Custom color <input id="customColor" type="color" value="#f1e5fb"></label>
+<div class="color-actions"><button type="button" id="resetColor">Reset Color</button><button type="button" id="closeColors">Done</button></div>
+</section></div>
 <script>
 (()=>{'use strict';
 const KEY='stock_market_event_calendar_v1';const $=s=>document.querySelector(s);
@@ -46,6 +67,35 @@ let events=[];try{const parsed=JSON.parse(localStorage.getItem(KEY)||'[]');event
 const pad=n=>String(n).padStart(2,'0'),fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,from=s=>new Date(s+'T12:00:00'),today=new Date(),todayKey=fmt(today);
 let cursor=from(todayKey),mode='week',selected=todayKey,editing=null;
 const save=()=>localStorage.setItem(KEY,JSON.stringify(events));
+const COLOR_KEY='market_events_colors_v1';
+let colors={week:{},month:{}};
+try{const p=JSON.parse(localStorage.getItem(COLOR_KEY)||'{}');if(p&&typeof p==='object')colors={week:p.week&&typeof p.week==='object'?p.week:{},month:p.month&&typeof p.month==='object'?p.month:{}}}catch{}
+const saveColors=()=>localStorage.setItem(COLOR_KEY,JSON.stringify(colors));
+const paletteColors=['#f8d9e7','#e7d8fa','#cddcfb','#bce6f2','#c9ebd7','#f9e8b4','#ffd9b8','#f8c9c2','#f5d4f6','#d4d1fa','#c5e4d9','#ece0cb'];
+let colorScope='week';
+const weekKey=d=>fmt(monday(d)),monthKey=d=>fmt(new Date(d.getFullYear(),d.getMonth(),1)).slice(0,7);
+const colorKey=()=>colorScope==='week'?weekKey(cursor):monthKey(cursor);
+const chosenColor=()=>colors[colorScope][colorKey()]||'';
+function applyColor(el,color){
+ if(!color)return;
+ el.style.backgroundColor=color;
+ el.style.borderColor=color;
+}
+function refreshColors(){
+ const week=colorScope==='week',key=colorKey();
+ $('#scopeWeek').classList.toggle('active',week);
+ $('#scopeMonth').classList.toggle('active',!week);
+ $('#colorPeriod').textContent=week?'Week of '+monday(cursor).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):cursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+ const selected=chosenColor(),grid=$('#palette');grid.innerHTML='';
+ paletteColors.forEach(c=>{
+ const b=document.createElement('button');b.type='button';b.className='swatch'+(selected.toLowerCase()===c.toLowerCase()?' chosen':'');b.style.backgroundColor=c;b.title=c;b.setAttribute('aria-label','Select color '+c);
+ b.onclick=()=>setColor(c);grid.append(b);
+ });
+ if(selected)$('#customColor').value=selected;
+}
+function setColor(c){colors[colorScope][colorKey()]=c;saveColors();refreshColors();render()}
+function showColors(){colorScope=mode;refreshColors();$('#colorScrim').classList.add('show')}
+
 const sorted=d=>events.filter(x=>x.date===d).sort((a,b)=>(Number.isFinite(a.order)?a.order:events.indexOf(a))-(Number.isFinite(b.order)?b.order:events.indexOf(b)));
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const addDays=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -84,12 +134,19 @@ function edit(id){
  $('#name').focus();
 }
 function render(){const root=$('#content');root.innerHTML='';$('#weekTab').classList.toggle('active',mode==='week');$('#monthTab').classList.toggle('active',mode==='month');
-if(mode==='week'){let start=monday(cursor),end=addDays(start,6);$('#period').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});let wrap=document.createElement('div');wrap.className='days';for(let i=0;i<7;i++){let d=addDays(start,i),key=fmt(d),card=document.createElement('div');card.className='day'+(key===todayKey?' today-card':'');let head=document.createElement('div');head.className='head';head.innerHTML=`<span class="num">${d.getDate()}</span><span class="weekday">${d.toLocaleDateString('en-US',{weekday:'short'})}</span><span class="plus">+</span>`;card.append(head);let records=sorted(key);if(!records.length){let e=document.createElement('div');e.className='empty';e.textContent='Tap to add event';card.append(e)}records.forEach(x=>{let el=document.createElement('div');el.className='event';if(x.time){let t=document.createElement('time');t.textContent=x.time;el.append(t)}let name=document.createElement('span');name.textContent=x.name;el.append(name);card.append(el)});card.onclick=()=>openDay(key);wrap.append(card)}root.append(wrap)}
-else{let y=cursor.getFullYear(),m=cursor.getMonth();$('#period').textContent=cursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});let grid=document.createElement('div');grid.className='month-grid';['M','T','W','T','F','S','S'].forEach(a=>{let el=document.createElement('div');el.className='dow';el.textContent=a;grid.append(el)});let first=monday(new Date(y,m,1));for(let i=0;i<42;i++){let d=addDays(first,i),key=fmt(d),records=sorted(key),cell=document.createElement('button');cell.className='cell'+(d.getMonth()!==m?' other':'')+(key===todayKey?' today-cell':'');let num=document.createElement('strong');num.textContent=d.getDate();cell.append(num);records.slice(0,2).forEach(x=>{let item=document.createElement('div');item.className='mark';item.textContent=(x.time?x.time+' ':'')+x.name;cell.append(item)});if(records.length>2){let more=document.createElement('div');more.className='more';more.textContent=`+${records.length-2} more`;cell.append(more)}cell.onclick=()=>openDay(key);grid.append(cell)}root.append(grid)}}
+if(mode==='week'){let start=monday(cursor),end=addDays(start,6);$('#period').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});let wrap=document.createElement('div');wrap.className='days';for(let i=0;i<7;i++){let d=addDays(start,i),key=fmt(d),card=document.createElement('div');card.className='day'+(key===todayKey?' today-card':'');applyColor(card,colors.week[weekKey(d)]);let head=document.createElement('div');head.className='head';head.innerHTML=`<span class="num">${d.getDate()}</span><span class="weekday">${d.toLocaleDateString('en-US',{weekday:'short'})}</span><span class="plus">+</span>`;card.append(head);let records=sorted(key);if(!records.length){let e=document.createElement('div');e.className='empty';e.textContent='Tap to add event';card.append(e)}records.forEach(x=>{let el=document.createElement('div');el.className='event';if(x.time){let t=document.createElement('time');t.textContent=x.time;el.append(t)}let name=document.createElement('span');name.textContent=x.name;el.append(name);card.append(el)});card.onclick=()=>openDay(key);wrap.append(card)}root.append(wrap)}
+else{let y=cursor.getFullYear(),m=cursor.getMonth();$('#period').textContent=cursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});let grid=document.createElement('div');grid.className='month-grid';['M','T','W','T','F','S','S'].forEach(a=>{let el=document.createElement('div');el.className='dow';el.textContent=a;grid.append(el)});let first=monday(new Date(y,m,1));for(let i=0;i<42;i++){let d=addDays(first,i),key=fmt(d),records=sorted(key),cell=document.createElement('button');cell.className='cell'+(d.getMonth()!==m?' other':'')+(key===todayKey?' today-cell':'');applyColor(cell,colors.month[monthKey(d)]);let num=document.createElement('strong');num.textContent=d.getDate();cell.append(num);records.slice(0,2).forEach(x=>{let item=document.createElement('div');item.className='mark';item.textContent=(x.time?x.time+' ':'')+x.name;cell.append(item)});if(records.length>2){let more=document.createElement('div');more.className='more';more.textContent=`+${records.length-2} more`;cell.append(more)}cell.onclick=()=>openDay(key);grid.append(cell)}root.append(grid)}}
 $('#prev').onclick=()=>{cursor=mode==='week'?addDays(cursor,-7):new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render()};
 $('#next').onclick=()=>{cursor=mode==='week'?addDays(cursor,7):new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render()};
 $('#today').onclick=()=>{cursor=from(todayKey);render()};
 $('#weekTab').onclick=()=>{mode='week';render()};$('#monthTab').onclick=()=>{mode='month';render()};
+$('#settings').onclick=showColors;
+$('#scopeWeek').onclick=()=>{colorScope='week';refreshColors()};
+$('#scopeMonth').onclick=()=>{colorScope='month';refreshColors()};
+$('#customColor').oninput=e=>setColor(e.target.value);
+$('#resetColor').onclick=()=>{delete colors[colorScope][colorKey()];saveColors();refreshColors();render()};
+$('#closeColors').onclick=()=>$('#colorScrim').classList.remove('show');
+$('#colorScrim').onclick=e=>{if(e.target===$('#colorScrim'))$('#colorScrim').classList.remove('show')};
 $('#addEvent').onclick=()=>edit(null);$('#cancelEdit').onclick=()=>{$('#form').hidden=true;$('#addEvent').hidden=false;editing=null};
 $('#form').onsubmit=e=>{
  e.preventDefault();
