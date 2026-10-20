@@ -42,10 +42,69 @@ h1{font-size:29px}.sub{font-size:14px}
 .custom-color{display:flex;align-items:center;gap:12px;font-size:16px;margin:18px 0}.custom-color input{width:62px;height:44px;border:0;background:none}
 .color-actions{display:flex;gap:9px}.color-actions button{flex:1;padding:12px;border:0;border-radius:12px;font-size:16px;background:#eee9f4;color:#514368}
 @media(max-width:400px){.palette{gap:8px}.toolbar{gap:7px}.toolbar strong{font-size:17px;min-width:110px}.settings-btn{padding:8px}}
+
+/* Borderless calendar with an event sidebar */
+body{background:#fffcfd;color:#17213b}
+.app{max-width:1480px;padding:28px 25px 105px}
+h1{font-size:30px;margin-bottom:7px}.sub{margin-bottom:22px}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,370px);gap:24px;align-items:start}
+#content{min-width:0}
+.month-grid{gap:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+.dow{font-size:15px;font-weight:650;padding:17px 0 15px;color:#525b74}
+.dow:first-child{color:#df356f}.dow:nth-child(7){color:#2389d6}
+.cell{border:0!important;border-radius:0;background:transparent!important;box-shadow:none;min-height:116px;padding:14px 7px 7px;overflow:visible;position:relative;text-align:left;transition:background .15s}
+.cell:hover,.cell.selected-cell{background:#f9f2fa!important;border-radius:12px}
+.cell.today-cell strong{background:#f7d3e5;border-radius:9px;padding:2px 6px;margin-left:-6px}
+.cell.other{opacity:.35}
+.cell strong{font-size:20px;font-weight:650;display:inline-block}
+.cell:nth-child(7n + 1) strong{color:#e33371}
+.cell:nth-child(7n) strong{color:#228cda}
+.cell .mark{font-size:13px;line-height:1.35;padding:6px 6px;margin-top:6px;border-radius:7px;white-space:normal;overflow-wrap:anywhere;overflow:hidden;text-overflow:ellipsis;background:#f4d8e8;color:#30344b}
+.cell .mark:nth-of-type(4n + 2){background:#e9dcf9}.cell .mark:nth-of-type(4n + 3){background:#d8eafa}.cell .more{font-size:12px}
+.days{gap:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.day{border:0!important;box-shadow:none!important;background:transparent!important;border-radius:12px;min-height:160px;padding:18px}
+.day:hover,.day.selected-day{background:#f9f2fa!important}
+.day .num{font-size:28px}.day .event{border:0;border-radius:7px;background:#f5deea;font-size:16px}
+.day .event:nth-of-type(3n){background:#e7dcf9}
+.day .event:nth-of-type(3n + 1){background:#d8eaf9}
+.day-panel{border-radius:22px;background:#fff9fd;min-height:480px;padding:24px 22px;position:sticky;top:16px}
+.panel-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:22px}
+.panel-head h2{font-size:22px;margin:0;font-weight:750;letter-spacing:-.4px}
+.panel-arrows{display:flex;gap:6px}
+.panel-arrows button{border:1px solid #e8e4ef;background:#fff;border-radius:12px;width:38px;height:38px;font-size:25px;color:#43516a;cursor:pointer}
+.panel-events{display:flex;flex-direction:column;gap:11px}
+.panel-event{display:flex;align-items:center;gap:9px;border-radius:14px;padding:14px 12px;background:#f3e7fc;min-height:60px}
+.panel-event:nth-child(4n + 2){background:#ffe3ed}.panel-event:nth-child(4n + 3){background:#fff1d7}.panel-event:nth-child(4n){background:#e3edff}
+.panel-event-text{font-size:16px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}
+.panel-event button{border:0;background:transparent;color:#3b4561;font-size:17px;cursor:pointer;padding:5px}
+.panel-event button:disabled{opacity:.25}
+.panel-empty{font-size:15px;color:#9a91a4;padding:18px 2px}
+.quick-form{display:flex;gap:9px;margin-top:23px}
+.quick-form input{min-width:0;flex:1;border:1px solid #e8e3ef;background:#fff;border-radius:14px;padding:14px 13px;font-size:16px;color:#27304a}
+.quick-form button{width:52px;border:0;border-radius:14px;background:#f76e9a;color:white;font-size:28px;cursor:pointer}
+.toolbar{margin-bottom:13px}.toolbar strong{font-size:23px}
+.nav{position:static;display:flex;background:transparent;border:0;padding:0;margin:0 0 15px;justify-content:center}
+.nav button{width:auto;min-width:120px;font-size:16px;background:transparent}
+.nav button.active{background:#f7d5e6;color:#222a42}
+footer{margin-top:26px}
+@media(max-width:800px){
+ .app{padding:17px 12px 85px}
+ .workspace{display:flex;flex-direction:column;gap:18px}
+ #content,.day-panel{width:100%}
+ .day-panel{position:static;min-height:0;padding:19px 15px}
+ .cell{min-height:83px;padding:9px 3px 5px}
+ .cell strong{font-size:17px}
+ .cell .mark{font-size:11px;padding:4px 3px;margin-top:4px}
+ .dow{font-size:12px;padding:10px 0}
+ .panel-head h2{font-size:20px}
+ .toolbar strong{font-size:19px}
+ .day{min-height:145px;padding:12px}
+}
+@media(max-width:380px){.cell{min-height:75px}.cell strong{font-size:16px}.cell .mark{font-size:10px}.panel-event{padding:10px 7px}.panel-event button{padding:3px}}
 </style></head><body>
 <main class="app"><h1>Market Events 🌸</h1><p class="sub">Your personal stock market event calendar</p>
 <div class="toolbar"><div class="arrows"><button class="arrow" id="prev" aria-label="Previous">‹</button><button class="arrow" id="next" aria-label="Next">›</button></div><strong id="period"></strong><button class="today" id="today">Today</button><button class="settings-btn" id="settings" aria-label="Calendar color settings" title="Colors">🎨</button></div>
-<div id="content"></div><footer>Events only · Saved on this device 🌿</footer></main>
+<div class="workspace"><div id="content"></div><aside id="dayPanel" class="day-panel" aria-label="Selected day events"><div class="panel-head"><h2 id="panelDate"></h2><div class="panel-arrows"><button id="panelPrev" type="button" aria-label="Previous day">‹</button><button id="panelNext" type="button" aria-label="Next day">›</button></div></div><div id="panelEvents" class="panel-events"></div><form id="quickForm" class="quick-form"><input id="quickInput" type="text" maxlength="1000" placeholder="Add an event…" aria-label="New event text" required><button type="submit" aria-label="Add event">＋</button></form></aside></div><footer>Events only · Saved on this device 🌿</footer></main>
 <nav class="nav"><button id="weekTab" class="active">📆 Week</button><button id="monthTab">🗓️ Month</button></nav>
 <div id="scrim" class="scrim"><section class="sheet" role="dialog" aria-modal="true" aria-label="Events editor">
 <h2 id="editorTitle"></h2><div id="eventList" class="list"></div><button id="addEvent" class="add">＋ Add Event</button>
@@ -100,7 +159,23 @@ const sorted=d=>events.filter(x=>x.date===d).sort((a,b)=>(Number.isFinite(a.orde
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const addDays=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
 function monday(d){let x=new Date(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return x}
-function openDay(date){selected=date;editing=null;$('#form').hidden=true;$('#addEvent').hidden=false;$('#scrim').classList.add('show');refreshEditor()}
+function openDay(date){selected=date;editing=null;$('#form').hidden=true;$('#addEvent').hidden=false;render();if(mode==='week'&&window.innerWidth<801)$('#dayPanel').scrollIntoView({behavior:'smooth',block:'start'})}
+function panelRender(){
+ const d=from(selected);
+ $('#panelDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+ const host=$('#panelEvents');host.innerHTML='';
+ const records=sorted(selected);
+ if(!records.length){const p=document.createElement('p');p.className='panel-empty';p.textContent='No events yet. Add one below!';host.append(p)}
+ records.forEach((x,i)=>{
+  const row=document.createElement('div');row.className='panel-event';
+  const label=document.createElement('div');label.className='panel-event-text';label.textContent=x.name||'';
+  const up=document.createElement('button');up.type='button';up.textContent='↑';up.title='Move up';up.disabled=i===0;up.onclick=()=>move(x.id,-1);
+  const down=document.createElement('button');down.type='button';down.textContent='↓';down.title='Move down';down.disabled=i===records.length-1;down.onclick=()=>move(x.id,1);
+  const editBtn=document.createElement('button');editBtn.type='button';editBtn.textContent='✎';editBtn.title='Edit';editBtn.onclick=()=>{edit(x.id);$('#scrim').classList.add('show');refreshEditor()};
+  const del=document.createElement('button');del.type='button';del.textContent='×';del.title='Delete';del.onclick=()=>{if(!confirm('Delete this event?'))return;events=events.filter(e=>e.id!==x.id);save();render()};
+  row.append(label,up,down,editBtn,del);host.append(row);
+ });
+}
 function refreshEditor(){
  const d=from(selected);
  $('#editorTitle').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
@@ -134,8 +209,11 @@ function edit(id){
  $('#name').focus();
 }
 function render(){const root=$('#content');root.innerHTML='';$('#weekTab').classList.toggle('active',mode==='week');$('#monthTab').classList.toggle('active',mode==='month');
-if(mode==='week'){let start=monday(cursor),end=addDays(start,6);$('#period').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});let wrap=document.createElement('div');wrap.className='days';for(let i=0;i<7;i++){let d=addDays(start,i),key=fmt(d),card=document.createElement('div');card.className='day'+(key===todayKey?' today-card':'');applyColor(card,colors.week[weekKey(d)]);let head=document.createElement('div');head.className='head';head.innerHTML=`<span class="num">${d.getDate()}</span><span class="weekday">${d.toLocaleDateString('en-US',{weekday:'short'})}</span><span class="plus">+</span>`;card.append(head);let records=sorted(key);if(!records.length){let e=document.createElement('div');e.className='empty';e.textContent='Tap to add event';card.append(e)}records.forEach(x=>{let el=document.createElement('div');el.className='event';if(x.time){let t=document.createElement('time');t.textContent=x.time;el.append(t)}let name=document.createElement('span');name.textContent=x.name;el.append(name);card.append(el)});card.onclick=()=>openDay(key);wrap.append(card)}root.append(wrap)}
-else{let y=cursor.getFullYear(),m=cursor.getMonth();$('#period').textContent=cursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});let grid=document.createElement('div');grid.className='month-grid';['M','T','W','T','F','S','S'].forEach(a=>{let el=document.createElement('div');el.className='dow';el.textContent=a;grid.append(el)});let first=monday(new Date(y,m,1));for(let i=0;i<42;i++){let d=addDays(first,i),key=fmt(d),records=sorted(key),cell=document.createElement('button');cell.className='cell'+(d.getMonth()!==m?' other':'')+(key===todayKey?' today-cell':'');applyColor(cell,colors.month[monthKey(d)]);let num=document.createElement('strong');num.textContent=d.getDate();cell.append(num);records.slice(0,2).forEach(x=>{let item=document.createElement('div');item.className='mark';item.textContent=(x.time?x.time+' ':'')+x.name;cell.append(item)});if(records.length>2){let more=document.createElement('div');more.className='more';more.textContent=`+${records.length-2} more`;cell.append(more)}cell.onclick=()=>openDay(key);grid.append(cell)}root.append(grid)}}
+if(mode==='week'){let start=monday(cursor),end=addDays(start,6);$('#period').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});let wrap=document.createElement('div');wrap.className='days';for(let i=0;i<7;i++){let d=addDays(start,i),key=fmt(d),card=document.createElement('div');card.className='day'+(key===todayKey?' today-card':'')+(key===selected?' selected-day':'');let head=document.createElement('div');head.className='head';head.innerHTML=`<span class="num">${d.getDate()}</span><span class="weekday">${d.toLocaleDateString('en-US',{weekday:'short'})}</span><span class="plus">+</span>`;card.append(head);let records=sorted(key);if(!records.length){let e=document.createElement('div');e.className='empty';e.textContent='Tap to add event';card.append(e)}records.forEach(x=>{let el=document.createElement('div');el.className='event';if(x.time){let t=document.createElement('time');t.textContent=x.time;el.append(t)}let name=document.createElement('span');name.textContent=x.name;el.append(name);card.append(el)});card.onclick=()=>openDay(key);wrap.append(card)}root.append(wrap)}
+else{let y=cursor.getFullYear(),m=cursor.getMonth();$('#period').textContent=cursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});let grid=document.createElement('div');grid.className='month-grid';['M','T','W','T','F','S','S'].forEach(a=>{let el=document.createElement('div');el.className='dow';el.textContent=a;grid.append(el)});let first=monday(new Date(y,m,1));for(let i=0;i<42;i++){let d=addDays(first,i),key=fmt(d),records=sorted(key),cell=document.createElement('button');cell.className='cell'+(d.getMonth()!==m?' other':'')+(key===todayKey?' today-cell':'')+(key===selected?' selected-cell':'');let num=document.createElement('strong');num.textContent=d.getDate();cell.append(num);records.slice(0,2).forEach(x=>{let item=document.createElement('div');item.className='mark';item.textContent=(x.time?x.time+' ':'')+x.name;cell.append(item)});if(records.length>2){let more=document.createElement('div');more.className='more';more.textContent=`+${records.length-2} more`;cell.append(more)}cell.onclick=()=>openDay(key);grid.append(cell)}root.append(grid)}panelRender()}
+$('#panelPrev').onclick=()=>{selected=fmt(addDays(from(selected),-1));cursor=from(selected);render()};
+$('#panelNext').onclick=()=>{selected=fmt(addDays(from(selected),1));cursor=from(selected);render()};
+$('#quickForm').onsubmit=e=>{e.preventDefault();const name=$('#quickInput').value.trim();if(!name)return;events.push({id:'evt_'+Date.now()+'_'+Math.random().toString(36).slice(2),date:selected,name,order:sorted(selected).length});save();$('#quickInput').value='';render()};
 $('#prev').onclick=()=>{cursor=mode==='week'?addDays(cursor,-7):new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render()};
 $('#next').onclick=()=>{cursor=mode==='week'?addDays(cursor,7):new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render()};
 $('#today').onclick=()=>{cursor=from(todayKey);render()};
